@@ -52,7 +52,7 @@ const Index = () => {
     <div className="px-4 pt-6 pb-24 max-w-md mx-auto">
       {/* Welcome */}
       <h1 className="text-2xl font-extrabold text-foreground mb-4">
-        Mingalarbar, user_name 👋
+        Mingalarbar, {displayName || "User"} 👋
       </h1>
 
       {/* Product Tabs */}
