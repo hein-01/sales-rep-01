@@ -84,9 +84,9 @@ const FeaturesPage = () => {
                   {description}
                 </p>
               </div>
-              <div className="flex items-center gap-1 shrink-0 mt-1">
-                <span className="text-[10px] font-semibold bg-gradient-to-r from-red-500 via-yellow-400 via-green-400 via-blue-500 to-purple-500 bg-clip-text text-transparent animate-[rainbow_3s_linear_infinite] bg-[length:200%_auto]">ကြည့်ရန်</span>
-                <ChevronRight size={24} className="animate-[rainbow_3s_linear_infinite] bg-[length:200%_auto] bg-gradient-to-r from-red-500 via-yellow-400 via-green-400 via-blue-500 to-purple-500 bg-clip-text text-transparent stroke-purple-500 [&]:stroke-[url(#rainbow)]" style={{ color: 'var(--rainbow-color, #8b5cf6)' }} />
+              <div className="flex items-center gap-1 shrink-0 mt-1 rainbow-animate">
+                <span className="text-[10px] font-semibold">ကြည့်ရန်</span>
+                <ChevronRight size={24} />
               </div>
             </div>
             {/* Feature Screenshot */}
