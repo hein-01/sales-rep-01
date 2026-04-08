@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, ChevronRight, X } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronRight, X, ZoomIn } from "lucide-react";
 
 import hrmsEmployeeDb from "@/assets/features/hrms-employee-database.jpg";
 import hrmsPayroll from "@/assets/features/hrms-payroll.jpg";
