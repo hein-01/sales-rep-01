@@ -84,7 +84,10 @@ const FeaturesPage = () => {
                   {description}
                 </p>
               </div>
-              <ChevronRight size={18} className="text-muted-foreground/50 shrink-0 mt-1" />
+              <div className="flex items-center gap-1 shrink-0 mt-1 rainbow-animate">
+                <span className="text-[10px] font-semibold">ကြည့်ရန်</span>
+                <ChevronRight size={24} />
+              </div>
             </div>
             {/* Feature Screenshot */}
             <button
