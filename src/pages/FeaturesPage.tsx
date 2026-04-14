@@ -89,7 +89,7 @@ const FeaturesPage = () => {
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/")}
           className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
         >
           <ArrowLeft size={18} className="text-foreground" />
