@@ -52,6 +52,7 @@ const SalesTrainingPage = () => {
             role: d.role,
             title: d.title,
             dialogues: (d.dialogues as unknown as Dialogue[]) || [],
+            image_url: (d as any).image_url || null,
           }))
         );
       }
