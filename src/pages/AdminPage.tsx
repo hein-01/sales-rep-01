@@ -252,6 +252,8 @@ const AdminPage = () => {
 
   const handleAddTraining = async () => {
     try {
+      let imageUrl = "";
+      if (newTrainingImageFile) imageUrl = await uploadImage(newTrainingImageFile, `training/${activeProduct}`);
       const filteredDialogues = newTrainingDialogues.filter((d) => d.question.trim() || d.answer.trim());
       const { error } = await supabase.from("sales_training_cards").insert([{
         product: activeProduct,
@@ -259,10 +261,11 @@ const AdminPage = () => {
         title: newTrainingTitle,
         dialogues: filteredDialogues as unknown as any,
         sort_order: trainingCards.length,
-      }]);
+        image_url: imageUrl,
+      } as any]);
       if (error) throw error;
       toast({ title: "Training card added!" });
-      setNewTrainingRole(""); setNewTrainingTitle(""); setNewTrainingDialogues([{ question: "", answer: "" }]); setShowAddTraining(false);
+      setNewTrainingRole(""); setNewTrainingTitle(""); setNewTrainingDialogues([{ question: "", answer: "" }]); setNewTrainingImageFile(null); setShowAddTraining(false);
       fetchTrainingCards();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
