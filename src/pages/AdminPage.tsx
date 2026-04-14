@@ -47,6 +47,7 @@ interface TrainingCard {
   title: string;
   dialogues: Dialogue[];
   sort_order: number;
+  image_url: string;
 }
 
 const AdminPage = () => {
@@ -84,6 +85,8 @@ const AdminPage = () => {
   const [editTrainingRole, setEditTrainingRole] = useState("");
   const [editTrainingTitle, setEditTrainingTitle] = useState("");
   const [editTrainingDialogues, setEditTrainingDialogues] = useState<Dialogue[]>([]);
+  const [newTrainingImageFile, setNewTrainingImageFile] = useState<File | null>(null);
+  const [editTrainingImageFile, setEditTrainingImageFile] = useState<File | null>(null);
 
   // === GUIDES STATE ===
   const [guides, setGuides] = useState<Guide[]>([]);
@@ -240,6 +243,7 @@ const AdminPage = () => {
           title: d.title,
           dialogues: (d.dialogues as unknown as Dialogue[]) || [],
           sort_order: d.sort_order,
+          image_url: (d as any).image_url || "",
         }))
       );
     }
@@ -248,6 +252,8 @@ const AdminPage = () => {
 
   const handleAddTraining = async () => {
     try {
+      let imageUrl = "";
+      if (newTrainingImageFile) imageUrl = await uploadImage(newTrainingImageFile, `training/${activeProduct}`);
       const filteredDialogues = newTrainingDialogues.filter((d) => d.question.trim() || d.answer.trim());
       const { error } = await supabase.from("sales_training_cards").insert([{
         product: activeProduct,
@@ -255,10 +261,11 @@ const AdminPage = () => {
         title: newTrainingTitle,
         dialogues: filteredDialogues as unknown as any,
         sort_order: trainingCards.length,
-      }]);
+        image_url: imageUrl,
+      } as any]);
       if (error) throw error;
       toast({ title: "Training card added!" });
-      setNewTrainingRole(""); setNewTrainingTitle(""); setNewTrainingDialogues([{ question: "", answer: "" }]); setShowAddTraining(false);
+      setNewTrainingRole(""); setNewTrainingTitle(""); setNewTrainingDialogues([{ question: "", answer: "" }]); setNewTrainingImageFile(null); setShowAddTraining(false);
       fetchTrainingCards();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -267,15 +274,19 @@ const AdminPage = () => {
 
   const handleUpdateTraining = async (id: string) => {
     try {
+      let imageUrl: string | undefined;
+      if (editTrainingImageFile) imageUrl = await uploadImage(editTrainingImageFile, `training/${activeProduct}`);
       const filteredDialogues = editTrainingDialogues.filter((d) => d.question.trim() || d.answer.trim());
-      const { error } = await supabase.from("sales_training_cards").update({
+      const updateData: any = {
         role: editTrainingRole,
         title: editTrainingTitle,
-        dialogues: filteredDialogues as unknown as any,
-      }).eq("id", id);
+        dialogues: filteredDialogues,
+      };
+      if (imageUrl) updateData.image_url = imageUrl;
+      const { error } = await supabase.from("sales_training_cards").update(updateData).eq("id", id);
       if (error) throw error;
       toast({ title: "Training card updated!" });
-      setEditingTrainingId(null);
+      setEditingTrainingId(null); setEditTrainingImageFile(null);
       fetchTrainingCards();
     } catch (err: any) {
       toast({ title: "Error", description: err.message, variant: "destructive" });
@@ -517,10 +528,11 @@ const AdminPage = () => {
               <h3 className="font-bold text-sm text-foreground">New Training Card for {activeProduct}</h3>
               <div className="space-y-2"><Label>Role</Label><Input value={newTrainingRole} onChange={(e) => setNewTrainingRole(e.target.value)} placeholder="e.g. Sales Rep, Customer, Manager" /></div>
               <div className="space-y-2"><Label>Title</Label><Input value={newTrainingTitle} onChange={(e) => setNewTrainingTitle(e.target.value)} placeholder="Scenario title" /></div>
+              <div className="space-y-2"><Label>Image</Label><Input type="file" accept="image/*" onChange={(e) => setNewTrainingImageFile(e.target.files?.[0] || null)} /></div>
               {renderDialogueEditor(newTrainingDialogues, setNewTrainingDialogues)}
               <div className="flex gap-2">
                 <Button onClick={handleAddTraining} disabled={!newTrainingTitle.trim() || !newTrainingRole.trim()} size="sm">Add</Button>
-                <Button onClick={() => setShowAddTraining(false)} variant="ghost" size="sm">Cancel</Button>
+                <Button onClick={() => { setShowAddTraining(false); setNewTrainingImageFile(null); }} variant="ghost" size="sm">Cancel</Button>
               </div>
             </div>
           )}
@@ -537,10 +549,11 @@ const AdminPage = () => {
                     <div className="space-y-3">
                       <div className="space-y-2"><Label>Role</Label><Input value={editTrainingRole} onChange={(e) => setEditTrainingRole(e.target.value)} /></div>
                       <div className="space-y-2"><Label>Title</Label><Input value={editTrainingTitle} onChange={(e) => setEditTrainingTitle(e.target.value)} /></div>
+                      <div className="space-y-2"><Label>Replace Image</Label><Input type="file" accept="image/*" onChange={(e) => setEditTrainingImageFile(e.target.files?.[0] || null)} /></div>
                       {renderDialogueEditor(editTrainingDialogues, setEditTrainingDialogues)}
                       <div className="flex gap-2">
                         <Button onClick={() => handleUpdateTraining(card.id)} size="sm"><Save size={14} className="mr-1" /> Save</Button>
-                        <Button onClick={() => setEditingTrainingId(null)} variant="ghost" size="sm">Cancel</Button>
+                        <Button onClick={() => { setEditingTrainingId(null); setEditTrainingImageFile(null); }} variant="ghost" size="sm">Cancel</Button>
                       </div>
                     </div>
                   ) : (
@@ -549,9 +562,10 @@ const AdminPage = () => {
                         <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{card.role}</span>
                         <h3 className="font-bold text-sm text-foreground mt-1">{card.title}</h3>
                         <p className="text-xs text-muted-foreground mt-0.5">{card.dialogues.length} dialogue{card.dialogues.length !== 1 ? "s" : ""}</p>
+                        {card.image_url && <img src={card.image_url} alt={card.title} className="mt-2 rounded-lg w-full max-h-32 object-cover" />}
                       </div>
                       <div className="flex gap-1 shrink-0">
-                        <button onClick={() => { setEditingTrainingId(card.id); setEditTrainingRole(card.role); setEditTrainingTitle(card.title); setEditTrainingDialogues(card.dialogues); }} className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted/80"><Pencil size={14} className="text-foreground" /></button>
+                        <button onClick={() => { setEditingTrainingId(card.id); setEditTrainingRole(card.role); setEditTrainingTitle(card.title); setEditTrainingDialogues(card.dialogues); setEditTrainingImageFile(null); }} className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted/80"><Pencil size={14} className="text-foreground" /></button>
                         <button onClick={() => handleDeleteTraining(card.id)} className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center hover:bg-destructive/20"><Trash2 size={14} className="text-destructive" /></button>
                       </div>
                     </div>
