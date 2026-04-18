@@ -99,7 +99,25 @@ const LeadDetailPage = () => {
   };
 
   const handleSave = () => {
-    // TODO: Save to database
+    if (!selectedOutcome) {
+      performNavigateBack();
+      return;
+    }
+    try {
+      const all = readAll();
+      const filtered = all.filter((o) => !(o.leadId === leadId && o.product === product));
+      filtered.push({
+        leadId,
+        company: companyName,
+        outcome: selectedOutcome,
+        notes,
+        product,
+        savedAt: Date.now(),
+      });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    } catch {
+      // ignore
+    }
     performNavigateBack();
   };
 
