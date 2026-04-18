@@ -1,4 +1,4 @@
-import { Trophy, BookOpen, LogOut } from "lucide-react";
+import { Trophy, BookOpen, LogOut, TrendingUp, Wallet, PiggyBank } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
