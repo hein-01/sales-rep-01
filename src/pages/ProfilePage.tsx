@@ -1,21 +1,37 @@
-import { Trophy, Flame, BookOpen, Star } from "lucide-react";
+import { Trophy, BookOpen, LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const stats = [
-  { label: "Lessons Done", value: "12", icon: <BookOpen size={18} />, color: "bg-primary/10 text-primary" },
-  { label: "Day Streak", value: "5", icon: <Flame size={18} />, color: "bg-secondary/20 text-secondary" },
+  { label: "Quiz Done", value: "12", icon: <BookOpen size={18} />, color: "bg-primary/10 text-primary" },
   { label: "Badges", value: "3", icon: <Trophy size={18} />, color: "bg-accent/15 text-accent" },
-  { label: "Avg Score", value: "82%", icon: <Star size={18} />, color: "bg-success/10 text-success" },
+];
+
+const badges = [
+  { emoji: "🚀", label: "HRMS" },
+  { emoji: "📚", label: "Job Portal" },
+  { emoji: "⭐", label: "GMS" },
 ];
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
+  const { displayName, user, signOut } = useAuth();
+
+  const handleLogout = async () => {
+    await signOut();
+    toast.success("Logged out");
+    navigate("/login");
+  };
+
+  const name = displayName || user?.email || "User";
+
   return (
     <div className="px-4 pt-6 pb-24 max-w-md mx-auto">
       <div className="flex flex-col items-center mb-8">
-        <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-          <span className="text-3xl font-extrabold text-primary">SR</span>
-        </div>
-        <h1 className="text-xl font-extrabold text-foreground">Sales Rep</h1>
-        <p className="text-sm text-muted-foreground">Junior Sales Associate</p>
+        <h1 className="text-xl font-extrabold text-foreground">{name}</h1>
+        <p className="text-sm text-muted-foreground">Tech Solution & Customer Success</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3 mb-6">
@@ -33,22 +49,31 @@ const ProfilePage = () => {
         ))}
       </div>
 
-      <div className="bg-card rounded-2xl p-4 border border-border">
-        <h2 className="font-bold text-sm text-foreground mb-3">Recent Badges</h2>
-        <div className="flex gap-3">
-          {["🚀", "📚", "⭐"].map((emoji, i) => (
+      <div className="bg-card rounded-2xl p-4 border border-border mb-4">
+        <h2 className="font-bold text-sm text-foreground mb-3">All Badges</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {badges.map((badge) => (
             <div
-              key={i}
-              className="w-14 h-14 rounded-2xl bg-muted flex items-center justify-center text-2xl"
+              key={badge.label}
+              className="flex flex-col items-center gap-1.5 p-2 rounded-2xl bg-muted"
             >
-              {emoji}
+              <div className="w-12 h-12 rounded-xl bg-background flex items-center justify-center text-2xl">
+                {badge.emoji}
+              </div>
+              <span className="text-[11px] font-bold text-foreground text-center">{badge.label}</span>
             </div>
           ))}
-          <div className="w-14 h-14 rounded-2xl bg-muted/50 border-2 border-dashed border-border flex items-center justify-center text-muted-foreground text-xs font-bold">
-            ?
-          </div>
         </div>
       </div>
+
+      <Button
+        onClick={handleLogout}
+        variant="outline"
+        className="w-full rounded-2xl h-12 text-base font-bold"
+      >
+        <LogOut size={18} />
+        Logout
+      </Button>
     </div>
   );
 };
