@@ -242,11 +242,21 @@ const LeadDetailPage = () => {
           <SelectTrigger className="rounded-2xl">
             <SelectValue placeholder="Select outcome..." />
           </SelectTrigger>
-          <SelectContent>
-            {outcomeOptions.map((option) => (
-              <SelectItem key={option} value={option}>
-                {option}
-              </SelectItem>
+          <SelectContent className="max-h-[60vh]">
+            {outcomeGroups.map((group, idx) => (
+              <div key={group.label}>
+                {idx > 0 && <SelectSeparator />}
+                <SelectGroup>
+                  <SelectLabel className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                    {group.label}
+                  </SelectLabel>
+                  {group.options.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      {option}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </div>
             ))}
           </SelectContent>
         </Select>
