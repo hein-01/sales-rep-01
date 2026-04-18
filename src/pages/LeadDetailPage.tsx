@@ -10,6 +10,16 @@ import {
 } from "@/components/ui/select";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const mockLeadDetails: Record<string, { company: string; phones: { label: string; number: string }[] }> = {
   "1": { company: "Acme Corp", phones: [{ label: "Office", number: "+1234567890" }] },
@@ -44,8 +54,11 @@ const LeadDetailPage = () => {
 
   const [notes, setNotes] = useState("");
   const [selectedOutcome, setSelectedOutcome] = useState(currentOutcome || "");
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
-  const goBack = () => {
+  const hasUnsavedChanges = notes.trim() !== "" || selectedOutcome !== currentOutcome;
+
+  const performNavigateBack = () => {
     if (currentOutcome === "Leads to Call") {
       navigate(`/leads-to-call?product=${product}`);
     } else {
@@ -53,9 +66,27 @@ const LeadDetailPage = () => {
     }
   };
 
+  const handleBackClick = () => {
+    if (hasUnsavedChanges) {
+      setShowConfirmDialog(true);
+    } else {
+      performNavigateBack();
+    }
+  };
+
   const handleSave = () => {
     // TODO: Save to database
-    goBack();
+    performNavigateBack();
+  };
+
+  const handleSaveFromDialog = () => {
+    setShowConfirmDialog(false);
+    handleSave();
+  };
+
+  const handleDiscard = () => {
+    setShowConfirmDialog(false);
+    performNavigateBack();
   };
 
   return (
@@ -63,7 +94,7 @@ const LeadDetailPage = () => {
       {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <button
-          onClick={goBack}
+          onClick={handleBackClick}
           className="p-2 -ml-2 rounded-xl hover:bg-muted transition-colors"
         >
           <ArrowLeft size={22} className="text-foreground" />
@@ -125,6 +156,31 @@ const LeadDetailPage = () => {
       <Button onClick={handleSave} className="w-full rounded-2xl h-12 text-base font-bold">
         Save
       </Button>
+
+      {/* Unsaved Changes Confirmation Dialog */}
+      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <AlertDialogContent className="rounded-2xl max-w-sm">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Unsaved changes</AlertDialogTitle>
+            <AlertDialogDescription>
+              You have unsaved changes. Would you like to save them before leaving, or discard them?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex-col gap-2 sm:flex-row">
+            <AlertDialogCancel className="rounded-xl mt-0">Cancel</AlertDialogCancel>
+            <Button
+              variant="outline"
+              onClick={handleDiscard}
+              className="rounded-xl"
+            >
+              Discard
+            </Button>
+            <AlertDialogAction onClick={handleSaveFromDialog} className="rounded-xl">
+              Save
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
