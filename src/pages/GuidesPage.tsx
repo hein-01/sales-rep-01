@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, CheckCircle2, ChevronRight, X, ZoomIn } from "lucide-react";
+import { ArrowLeft, CheckCircle2, X, ZoomIn } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -78,10 +78,6 @@ const GuidesPage = () => {
                   <CheckCircle2 size={14} className="text-muted-foreground/30 shrink-0" />
                 </div>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{description}</p>
-              </div>
-              <div className="flex items-center gap-1 shrink-0 mt-1 rainbow-animate">
-                <span className="text-[10px] font-semibold">ဖတ်ရန်</span>
-                <ChevronRight size={24} />
               </div>
             </div>
             {image && (
